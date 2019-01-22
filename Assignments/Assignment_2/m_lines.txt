@@ -1,0 +1,8 @@
+      49 ../../Chris/Desktop/Data_Course/Data/data-shell/data/pdb/maltose.pdb
+      35 ../../Chris/Desktop/Data_Course/Data/data-shell/data/pdb/menthol.pdb
+       9 ../../Chris/Desktop/Data_Course/Data/data-shell/data/pdb/methane.pdb
+      10 ../../Chris/Desktop/Data_Course/Data/data-shell/data/pdb/methanol.pdb
+      36 ../../Chris/Desktop/Data_Course/Data/data-shell/data/pdb/mint.pdb
+      44 ../../Chris/Desktop/Data_Course/Data/data-shell/data/pdb/morphine.pdb
+      41 ../../Chris/Desktop/Data_Course/Data/data-shell/data/pdb/mustard.pdb
+     224 total
