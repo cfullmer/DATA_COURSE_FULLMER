@@ -1,0 +1,189 @@
+
+Call:
+lm(formula = Diversity ~ Precip, data = atmosphere)
+
+Residuals:
+    Min      1Q  Median      3Q     Max 
+-513.35 -114.48  -46.87   85.67  991.32 
+
+Coefficients:
+            Estimate Std. Error t value Pr(>|t|)    
+(Intercept)  101.109     17.951   5.633 4.13e-08 ***
+Precip       215.317      4.003  53.789  < 2e-16 ***
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+Residual standard error: 210.5 on 296 degrees of freedom
+Multiple R-squared:  0.9072,	Adjusted R-squared:  0.9069 
+F-statistic:  2893 on 1 and 296 DF,  p-value: < 2.2e-16
+
+
+Call:
+lm(formula = Diversity ~ Precip * Year * Aerosol_Density, data = atmosphere)
+
+Residuals:
+    Min      1Q  Median      3Q     Max 
+-470.48  -45.22   -7.52   49.57  269.87 
+
+Coefficients:
+                              Estimate Std. Error t value Pr(>|t|)    
+(Intercept)                  1.586e+04  7.421e+03   2.137 0.033440 *  
+Precip                       1.167e+04  2.033e+03   5.742 2.36e-08 ***
+Year                        -7.915e+00  3.697e+00  -2.141 0.033115 *  
+Aerosol_Density             -8.733e+02  3.495e+01 -24.990  < 2e-16 ***
+Precip:Year                 -5.794e+00  1.013e+00  -5.722 2.62e-08 ***
+Precip:Aerosol_Density       1.221e+01  3.145e+00   3.883 0.000128 ***
+Year:Aerosol_Density         4.367e-01  1.745e-02  25.033  < 2e-16 ***
+Precip:Year:Aerosol_Density -6.076e-03  1.564e-03  -3.885 0.000127 ***
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+Residual standard error: 91.65 on 290 degrees of freedom
+Multiple R-squared:  0.9828,	Adjusted R-squared:  0.9823 
+F-statistic:  2362 on 7 and 290 DF,  p-value: < 2.2e-16
+
+
+Call:
+lm(formula = Diversity ~ Aerosol_Density, data = atmosphere)
+
+Residuals:
+    Min      1Q  Median      3Q     Max 
+-1456.4  -387.8    30.4   304.4  3382.5 
+
+Coefficients:
+                Estimate Std. Error t value Pr(>|t|)    
+(Intercept)      59.2454    64.6477   0.916     0.36    
+Aerosol_Density   2.6116     0.1962  13.314   <2e-16 ***
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+Residual standard error: 546.4 on 296 degrees of freedom
+Multiple R-squared:  0.3746,	Adjusted R-squared:  0.3724 
+F-statistic: 177.3 on 1 and 296 DF,  p-value: < 2.2e-16
+
+
+Call:
+lm(formula = Diversity ~ Precip, data = atmosphere)
+
+Residuals:
+    Min      1Q  Median      3Q     Max 
+-513.35 -114.48  -46.87   85.67  991.32 
+
+Coefficients:
+            Estimate Std. Error t value Pr(>|t|)    
+(Intercept)  101.109     17.951   5.633 4.13e-08 ***
+Precip       215.317      4.003  53.789  < 2e-16 ***
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+Residual standard error: 210.5 on 296 degrees of freedom
+Multiple R-squared:  0.9072,	Adjusted R-squared:  0.9069 
+F-statistic:  2893 on 1 and 296 DF,  p-value: < 2.2e-16
+
+
+Call:
+lm(formula = Diversity ~ Precip * Year * Aerosol_Density, data = atmosphere)
+
+Residuals:
+    Min      1Q  Median      3Q     Max 
+-470.48  -45.22   -7.52   49.57  269.87 
+
+Coefficients:
+                              Estimate Std. Error t value Pr(>|t|)    
+(Intercept)                  1.586e+04  7.421e+03   2.137 0.033440 *  
+Precip                       1.167e+04  2.033e+03   5.742 2.36e-08 ***
+Year                        -7.915e+00  3.697e+00  -2.141 0.033115 *  
+Aerosol_Density             -8.733e+02  3.495e+01 -24.990  < 2e-16 ***
+Precip:Year                 -5.794e+00  1.013e+00  -5.722 2.62e-08 ***
+Precip:Aerosol_Density       1.221e+01  3.145e+00   3.883 0.000128 ***
+Year:Aerosol_Density         4.367e-01  1.745e-02  25.033  < 2e-16 ***
+Precip:Year:Aerosol_Density -6.076e-03  1.564e-03  -3.885 0.000127 ***
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+Residual standard error: 91.65 on 290 degrees of freedom
+Multiple R-squared:  0.9828,	Adjusted R-squared:  0.9823 
+F-statistic:  2362 on 7 and 290 DF,  p-value: < 2.2e-16
+
+
+Call:
+lm(formula = Diversity ~ Aerosol_Density, data = atmosphere)
+
+Residuals:
+    Min      1Q  Median      3Q     Max 
+-1456.4  -387.8    30.4   304.4  3382.5 
+
+Coefficients:
+                Estimate Std. Error t value Pr(>|t|)    
+(Intercept)      59.2454    64.6477   0.916     0.36    
+Aerosol_Density   2.6116     0.1962  13.314   <2e-16 ***
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+Residual standard error: 546.4 on 296 degrees of freedom
+Multiple R-squared:  0.3746,	Adjusted R-squared:  0.3724 
+F-statistic: 177.3 on 1 and 296 DF,  p-value: < 2.2e-16
+
+
+Call:
+lm(formula = Diversity ~ Precip, data = atmosphere)
+
+Residuals:
+    Min      1Q  Median      3Q     Max 
+-513.35 -114.48  -46.87   85.67  991.32 
+
+Coefficients:
+            Estimate Std. Error t value Pr(>|t|)    
+(Intercept)  101.109     17.951   5.633 4.13e-08 ***
+Precip       215.317      4.003  53.789  < 2e-16 ***
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+Residual standard error: 210.5 on 296 degrees of freedom
+Multiple R-squared:  0.9072,	Adjusted R-squared:  0.9069 
+F-statistic:  2893 on 1 and 296 DF,  p-value: < 2.2e-16
+
+
+Call:
+lm(formula = Diversity ~ Precip * Year * Aerosol_Density, data = atmosphere)
+
+Residuals:
+    Min      1Q  Median      3Q     Max 
+-470.48  -45.22   -7.52   49.57  269.87 
+
+Coefficients:
+                              Estimate Std. Error t value Pr(>|t|)    
+(Intercept)                  1.586e+04  7.421e+03   2.137 0.033440 *  
+Precip                       1.167e+04  2.033e+03   5.742 2.36e-08 ***
+Year                        -7.915e+00  3.697e+00  -2.141 0.033115 *  
+Aerosol_Density             -8.733e+02  3.495e+01 -24.990  < 2e-16 ***
+Precip:Year                 -5.794e+00  1.013e+00  -5.722 2.62e-08 ***
+Precip:Aerosol_Density       1.221e+01  3.145e+00   3.883 0.000128 ***
+Year:Aerosol_Density         4.367e-01  1.745e-02  25.033  < 2e-16 ***
+Precip:Year:Aerosol_Density -6.076e-03  1.564e-03  -3.885 0.000127 ***
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+Residual standard error: 91.65 on 290 degrees of freedom
+Multiple R-squared:  0.9828,	Adjusted R-squared:  0.9823 
+F-statistic:  2362 on 7 and 290 DF,  p-value: < 2.2e-16
+
+
+Call:
+lm(formula = Diversity ~ Aerosol_Density, data = atmosphere)
+
+Residuals:
+    Min      1Q  Median      3Q     Max 
+-1456.4  -387.8    30.4   304.4  3382.5 
+
+Coefficients:
+                Estimate Std. Error t value Pr(>|t|)    
+(Intercept)      59.2454    64.6477   0.916     0.36    
+Aerosol_Density   2.6116     0.1962  13.314   <2e-16 ***
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+Residual standard error: 546.4 on 296 degrees of freedom
+Multiple R-squared:  0.3746,	Adjusted R-squared:  0.3724 
+F-statistic: 177.3 on 1 and 296 DF,  p-value: < 2.2e-16
+
