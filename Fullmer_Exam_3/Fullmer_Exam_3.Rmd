@@ -1,0 +1,384 @@
+---
+title: "Fullmer_Exam_3"
+author: "christian"
+date: "11/26/2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+```
+
+## Exam 3
+
+
+
+#Reading, cleaning, preliminary manipulation
+
+Read-in using the "|" as the deliminating factor.
+
+```{r, echo=FALSE, include=FALSE}
+
+library(tidyverse)
+
+biologData<-read.delim("./BioLogData_Exam3.csv",sep = "|")
+
+```
+
+
+```{r, echo=FALSE, include=FALSE}
+#when absorbance is equal to zero for hr 24, 48, and 144 across all repetitions for a given well, then that locus is facorized as non-response, all others are factorized as response  (at given location dilution)
+
+
+biologData <- biologData %>% mutate(Absorbance_Sum = rowSums(.[,c('Hr_24','Hr_48','Hr_144')]))
+
+
+```
+
+
+
+
+```{r,echo=TRUE, include=TRUE}
+
+
+biologTidy<- biologData %>%pivot_longer(cols=starts_with("Hr_"), names_to = "Hr",names_prefix = "Hr_", values_to = "Absorbance" )
+
+
+
+```
+##Which sample locations are functionally different from each other in terms of what C-substrates they can utilize?
+```{r,echo=TRUE, include=TRUE}
+biologClearCreek<- filter(biologTidy, Sample.ID=="Clear_Creek") %>% dplyr::select(-Sample.ID)
+biologSoil1<- filter(biologTidy, Sample.ID=="Soil_1") %>% dplyr::select(-Sample.ID)
+biologSoil2<- filter(biologTidy, Sample.ID=="Soil_2") %>% dplyr::select(-Sample.ID)
+biologWasteWater<-filter(biologTidy, Sample.ID=="Waste_Water") %>% dplyr::select(-Sample.ID)
+
+
+
+# create a dataset
+sampleID <- c(rep("Clear Creek" , 3) , rep("Soil 1" , 3) , rep("Soil 2" , 3) , rep("Waste Water" , 3) )
+Well<- rep(c("A1" , "A2" , "A3", "A4","B1" , "B2" , "B3", "B4","C1" , "C2" , "C3", "C4","D1" , "D2" , "D3", "D4","E1" , "E2" , "E3", "E4","F1" , "F2" , "F3", "F4","G1" , "G2" , "G3", "G4","H1" , "H2" , "H3", "H4") , 4)
+data <- data.frame(sampleID,Well,biologTidy$Absorbance)
+ 
+
+# Grouped
+ggplot(data, aes(fill=Well, y=biologTidy$Absorbance, x=sampleID)) + 
+    geom_bar(position="dodge", stat="identity")
+```
+
+
+```{r,echo=TRUE, include=TRUE}
+#ClearCreek
+canCC<-biologClearCreek%>%dplyr::filter(Absorbance_Sum>0)%>%dplyr::select(Well, Substrate)%>%unique()
+canS1<-biologSoil1%>%dplyr::filter(Absorbance_Sum>0)%>%dplyr::select(Well, Substrate)%>%unique()
+canS2<-biologSoil2%>%dplyr::filter(Absorbance_Sum>0)%>%dplyr::select(Well, Substrate)%>%unique()
+canWW<-biologWasteWater%>%dplyr::filter(Absorbance_Sum>0)%>%dplyr::select(Well, Substrate)%>%unique()
+
+```
+
+
+Substrates and Well Index for with some absorbance for the Clear Creek
+```{r,echo=TRUE, include=TRUE}
+
+canCC%>%group_by(Well)%>%print.data.frame()
+```
+
+Clear creek
+
+
+```{r,echo=TRUE, include=TRUE}
+
+```
+
+
+
+```{r,echo=TRUE, include=TRUE}
+
+#Index of Substrates and Well for substrates with non-zero value for Soil 1 Sample
+
+canS1%>%group_by(Well)%>%print.data.frame()
+```
+
+```{r,echo=TRUE, include=TRUE}
+
+```
+
+```{r,echo=TRUE, include=TRUE}
+#Index of Substrates and Well for substrates with non-zero value for Soil 2 Sample
+
+canS2%>%group_by(Well)%>%print.data.frame()
+```
+
+```{r,echo=TRUE, include=TRUE}
+
+```
+
+```{r,echo=TRUE, include=TRUE}
+#Index of Substrates and Well for substrates with non-zero value for WW Sample
+
+canWW%>%group_by(Well)%>%print.data.frame()
+
+```
+
+```{r,echo=TRUE, include=TRUE}
+
+```
+
+```{r,echo=TRUE, include=TRUE}
+
+
+```
+##Are Soil and Water samples significantly different overall (as in, overall diversity of usable carbon sources)?
+Yes, the graph below demonstrates that the soil samples have a greater spread, and more diversity of usable carbon sources. 
+```{r,echo=TRUE, include=TRUE}
+
+ggplot(biologTidy, aes(Sample.ID, Absorbance))+geom_point()+geom_boxplot()
+```
+ 
+##What about for individual carbon substrates?
+
+```{r,echo=TRUE, include=TRUE}
+
+ggplot(biologTidy, aes(Sample.ID, Absorbance))+geom_point()+geom_boxplot()+facet_wrap(~biologTidy$Substrate)
+```
+D.L -α-Glycerol Phosphate and γ-Hydroxybutyric Acid both appear to have a similar diversity of usable carbon substrates between samples. 
+
+
+
+```{r,echo=TRUE, include=TRUE}
+
+# create a dataset
+Sample.ID <- c(rep("Cleer Creek" , 3) , rep("Soil 1" , 3) , rep("Soil 2" , 3), rep("Waste Water" , 3) )
+Dilution<- rep(c(".001" , ".01" , ".1", 4))
+data <- data.frame(Well,Sample.ID,biologTidy$Absorbance)
+ 
+
+# Grouped
+ggplot(data, aes(fill=Sample.ID, y=biologTidy$Absorbance, x=Well)) + 
+    geom_bar(position="dodge", stat="identity")
+```
+
+
+
+
+##Does the dilution factor change any of these answers?
+```{r,echo=TRUE, include=TRUE}
+
+
+predictions<-gather_predictions(atmosphere, mod2, mod3)
+
+
+
+
+```
+
+
+Do the control samples indicate any contamination?
+
+
+mod1_aov_biologTidy<-aov(Absorbance~Hr+Substrate+Sample.ID+Dilution,data=biologTidy) 
+summary.aov(mod1_aov_biologTidy)
+plot(mod1_aov_biologTidy)
+abline(mod1_aov_biologTidy)
+
+mod1_lm_biologTidy<-lm(Absorbance~Hr+Substrate+Sample.ID+Dilution,data=biologTidy) 
+summary(mod1_lm_biologTidy)
+plot(mod1_lm_biologTidy)
+abline(mod1_lm_biologTidy)
+
+
+
+
+
+
+biologClearCreekVeryDilute <- filter(biologTidy, Sample.ID=="Clear_Creek", as.factor(Dilution)==.001) %>% dplyr::select(-Sample.ID, -Dilution) 
+biologClearCreekDilute <- filter(biologTidy, Sample.ID=="Clear_Creek", as.factor(Dilution)==.01) %>% dplyr::select(-Sample.ID, -Dilution)
+biologClearCreekPotent <- filter(biologTidy, Sample.ID=="Clear_Creek", as.factor(Dilution)==.1) %>% dplyr::select(-Sample.ID, -Dilution)
+
+biologSoil1VeryDilute<- filter(biologTidy, Sample.ID=="Soil_1", as.factor(Dilution)==.001) %>% dplyr::select(-Sample.ID, -Dilution)
+biologSoil1Dilute<- filter(biologTidy, Sample.ID=="Soil_1", as.factor(Dilution)==.01) %>% dplyr::select(-Sample.ID, -Dilution)
+biologSoil1Potent<- filter(biologTidy, Sample.ID=="Soil_1", as.factor(Dilution)==.1) %>% dplyr::select(-Sample.ID, -Dilution)
+biologSoil2<- filter(biologTidy, Sample.ID=="Soil_2") %>% dplyr::select(-Sample.ID)
+biologSoil2VeryDilute<- filter(biologTidy, Sample.ID=="Soil_2", as.factor(Dilution)==.001) %>% dplyr::select(-Sample.ID, -Dilution)
+biologSoil2Dilute<- filter(biologTidy, Sample.ID=="Soil_2", as.factor(Dilution)==.01) %>% dplyr::select(-Sample.ID, -Dilution)
+biologSoil2Potent<- filter(biologTidy, Sample.ID=="Soil_2", as.factor(Dilution)==.1) %>% dplyr::select(-Sample.ID, -Dilution)
+
+biologWasteWaterVeryDilute<- filter(biologTidy, Sample.ID=="Waste_Water", as.factor(Dilution)==.001) %>% dplyr::select(-Sample.ID, -Dilution)
+biologWasteWaterDilute<- filter(biologTidy, Sample.ID=="Waste_Water", as.factor(Dilution)==.01) %>% dplyr::select(-Sample.ID, -Dilution)
+biologWasteWaterPotent<- filter(biologTidy, Sample.ID=="Waste_Water", as.factor(Dilution)==.1) %>% dplyr::select(-Sample.ID, -Dilution)
+
+```
+b. by location 
+
+
+```{r,echo=TRUE, include=TRUE}
+
+
+
+
+cc <-  ggplot(data=biologClearCreek, aes(x = Hr, y = Absorbance, color=Rep)) + geom_smooth(method=lm(degree = 2L))+geom_point(aes(shape=Dilution))+labs(title = "Absorbance vs Time at Clear Creek for Substrate:") 
+
+plots <- biologClearCreek %>%
+    group_by(Substrate) %>%
+    do(plots = cc %+% . + facet_wrap(~Substrate))
+
+
+plots$plots
+```
+##
+
+p <- ggplot(data = df, aes(x = x, y = y)) +
+            geom_smooth(method = "lm", se=FALSE, color="black", formula = y ~ x) +
+            geom_point()
+p
+
+lm_eqn <- function(df){
+    m <- lm(y ~ x, df);
+    eq <- substitute(italic(y) == a + b %.% italic(x)*","~~italic(r)^2~"="~r2, 
+         list(a = format(unname(coef(m)[1]), digits = 2),
+              b = format(unname(coef(m)[2]), digits = 2),
+             r2 = format(summary(m)$r.squared, digits = 3)))
+    as.character(as.expression(eq));
+}
+
+p1 <- p + geom_text(x = 25, y = 300, label = lm_eqn(df), parse = TRUE)
+
+##
+
+
+soil1 = ggplot(data = biologSoil1, aes(x = Hr, y = Absorbance, color=Dilution)) + geom_smooth()+geom_point()
+
+plots = biologSoil1 %>%
+    group_by(Substrate) %>%
+    do(plots = soil1 %+% . + facet_wrap(~Substrate))
+
+
+plots$plots
+
+
+soil2 = ggplot(data = biologSoil2, aes(x = Hr, y = Absorbance, color=Dilution)) + geom_smooth()+geom_point()
+
+plots = biologSoil2 %>%
+    group_by(Substrate) %>%
+    do(plots = soil2 %+% . + facet_wrap(~Substrate))
+
+
+plots$plots
+
+
+ww = ggplot(data = biologWasteWater, aes(x = Hr, y = Absorbance, color=Dilution)) + geom_smooth()+geom_point()
+
+plots = biologWasteWater %>%
+    group_by(Substrate) %>%
+    do(plots = ww %+% . + facet_wrap(~Substrate))
+
+
+plots$plots
+          
+
+
+
+
+
+```
+
+
+##quantitartively exploring data 
+a. Evaluating overarching models which include all data 
+How do I avoid overfitting?
+```{r,echo=TRUE, include=TRUE}
+
+#Mod1 doesnt include rep so comparing between this model and subsequent ones that do should give information regarding how much changes between reps, but ultimately, it shouldnt be used in the model, because repetitions are a control. 
+
+
+
+
+
+mod2_aov_biologTidy<-aov(Absorbance~Hr*Substrate*Sample.ID+Dilution,data=biologTidy) 
+summary.aov(mod2_aov_biologTidy)
+plot(mod2_aov_biologTidy)
+
+mod3_aov_biologTidy<-aov(Absorbance~Hr*Substrate*Sample.ID,data=biologTidy) 
+summary.aov(mod2_aov_biologTidy)
+plot(mod2_aov_biologTidy)
+
+
+predictions<-modelr::gather_predictions(biologTidy, mod2_aov_biologTidy,mod3_aov_biologTidy)
+
+
+ggplot(predictions,aes(x=Hr,color=model)) + geom_point(aes(y=Absorbance),color="Blue") + geom_point(aes(y=pred),alpha=.5) + facet_wrap(~model)+ 
+
+
+
+
+
+```
+
+
+(B.) by location and dilution:
+
+```{r, echo=TRUE, include=TRUE}
+
+
+
+biologClearCreekVeryDilute%>% filter()%>%mutate()
+
+biologClearCreekVeryDilute%>% ggplot(aes(x=Hr,y=Absorbance, color=Rep)) + geom_point()+facet_wrap(.~Substrate)+geom_smooth(method="lm")
+
+
+
+
+
+mod_biologClearCreekVeryDilute <- lm(Absorbance~Hr*Rep,data=biologClearCreek) ##What information might this provive? **overall treands at a given location to compare against eachother regardless of the dilution factor. 
+ggplot(mod_biologClearCreekVeryDilute,(aes(x=Hr,y=Absorbance)))+geom_smooth(method = lm)
+```
+```
+
+
+```
+mod_biologClearCreekDilute <-lm(Absorbance~Hr*Rep,data=biologClearCreek)
+```
+
+```{r, echo=TRUE, include=TRUE}
+
+
+
+
+```
+ 
+ 
+ 
+```{r,echo=TRUE, include=TRUE}
+##x=hr y=absorbance color=repetion (for each locationDilution) and determine slope
+
+
+
+``` 
+##analyzing variation between sites and reps quanititively. 
+
+I will create 12 long data frames, one for each dilution factor at each site. Each row will represent a well, and there will be a column for the absorbance of each repetiton. Then I will add a row to quantitively analyze the spread between repetitons at the same site and same dilution. Then we will compare the the relative spreads at each site with a grouped histogram or bar chart. This will provide further insights about how to handle the data to draw accurate conclusions. 
+
+```{r,echo=TRUE, include=TRUE} 
+ 
+
+
+```
+
+
+
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+
+```
+
+## Including Plots
+
+You can also embed plots, for example:
+
+
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
