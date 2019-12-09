@@ -68,7 +68,7 @@ made a dataframe with each variable to deal with some aes transperancy issues I 
 ```{r,echo=FALSE, include=TRUE}
 data <- biologTidy%>%data.frame(biologTidy$Substrate,biologTidy$Rep,biologTidy$Absorbance,biologTidy$Hr)
 ggplot(data, aes(fill=Sample.ID, y=Absorbance, x=Sample.ID)) + 
-  geom_boxplot(inherit.aes=TRUE,linetype=1,outlier.shape = 1 )
+  geom_boxplot(inherit.aes=TRUE,linetype=1,outlier.shape = 1 )%>%print()
 
 ```
 
