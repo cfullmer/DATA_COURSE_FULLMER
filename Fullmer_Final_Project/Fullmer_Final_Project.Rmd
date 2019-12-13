@@ -1,0 +1,246 @@
+---
+title: " Analysis of Accidental Drug Related Deaths in Connecticut from 2012-2018"
+author: "Christian Fullmer"
+date: "12/12/2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+```{r, echo=TRUE, include=FALSE}
+
+library(dplyr)
+library(tibble)
+library(tidyr)
+library(ggplot2)
+
+##what drugs are invlived with drug deaths by year? 
+  
+
+##is the problem centralized to a particulr area? 
+  
+
+#what are the demographics of the individuals who die by year
+
+
+
+drugDeaths<-read.csv("Accidental_Drug_Related_Deaths_2012-2018.csv")
+CleanOther<-read.csv("cleanData.csv", header = TRUE,blank.lines.skip = FALSE)
+
+
+
+
+
+
+for (i in 1:13){
+CleanOther<-add_row(CleanOther)
+i+1}
+
+
+
+drugDeaths$Date<-as.POSIXct(drugDeaths$Date,tz="",format="%m/%d/%Y %H:%M:%S")
+
+
+
+
+#remove columns we dont need/large unneseary objects
+drugDeaths<-select(drugDeaths, -Other)
+drugDeaths<-select(drugDeaths, -DateType)
+drugDeaths<-select(drugDeaths, -Location)
+drugDeaths<-select(drugDeaths, -LocationifOther)
+drugDeaths<-select(drugDeaths, -DescriptionofInjury)
+drugDeaths<-select(drugDeaths, -InjuryPlace)
+drugDeaths<-select(drugDeaths, -COD)
+drugDeaths<-select(drugDeaths, -OtherSignifican)
+drugDeaths<-select(drugDeaths, -MannerofDeath)
+drugDeaths<-select(drugDeaths, -AnyOpioid)
+
+
+
+
+substances_y<-names((drugDeaths[,c(14:28)]))
+
+substances_y
+
+#why cant i replace above with the variable names? i.e heropin & hydromorphone
+
+
+for(i in substances_y){
+  drugDeaths[i] <- ifelse(drugDeaths[i] == "Y", yes=as.numeric(1), no=as.numeric(0))
+}
+
+
+for (varname in substances_y){
+  drugDeaths[varname] <- ifelse(drugDeaths[[varname]]== 1, yes=glue::glue("{varname}"), no=NA)
+}
+
+#split Cllean.Other
+
+
+drugDeaths<-add_column(drugDeaths, CleanOther$Other, .after="OpiateNOS")
+
+colnames(drugDeaths)[colnames(drugDeaths)=="CleanOther$Other"] <- "Other"
+?add_column()
+
+#scrubadub
+drugDeaths$Other <- as.character(drugDeaths$Other)
+drugDeaths$Other[drugDeaths$Other == "Hydromorph"] <- "Hydromorphone"
+
+
+
+drugDeaths<-separate(drugDeaths, Other, into=c("Other_1","Other_2") ,sep = ",", remove = TRUE,
+                     convert = FALSE, extra = "merge", fill = "right")
+
+drugDeaths$Other_1 <- as.character(drugDeaths$Other_1)
+drugDeaths$Other_1[drugDeaths$Other_1 == ""] <- NA
+ 
+
+
+
+
+
+## For accurate count of drugs per death (run below with adjusted column subset) 
+
+##drugDeaths$Other <- ifelse(drugDeaths$Other == "", yes=as.numeric(0), no=as.numeric(1))
+##drugDeaths<-mutate(drugDeaths, substance_count=rowSums(drugDeaths[21:35])) 
+
+
+
+##how many drugs were associated with each death by year? 
+
+#convert to posix format we can work with the years
+
+drugDeaths$Date<-as.POSIXlt(drugDeaths$Date)
+
+drugDeaths$day <- drugDeaths$Date$mday       
+drugDeaths$month <- drugDeaths$Date$mon + 1   
+drugDeaths$year <- drugDeaths$Date$year + 1900
+
+drugDeaths$Date<-as.POSIXct(drugDeaths$Date)
+
+
+
+##lengthen
+
+
+names(drugDeaths)[14:30]<- paste(".", colnames(drugDeaths[14:30]), sep = "")
+longertest<-pivot_longer(drugDeaths, cols=starts_with("."), names_to = "Substance", values_to = "Substance", names_prefix = ".",names_repair = "unique",  values_ptypes = list(val = 'character'),values_drop_na = TRUE)
+
+longertest<-longertest%>%select(-Substance...20)
+
+names(longertest)[20]<-"Substance"
+
+
+
+
+
+for (i in 14:30){
+  drugDeaths[i] <- ifelse(is.na(drugDeaths[i]), yes=as.numeric(0), no=as.numeric(1))
+}
+
+drugDeaths<-mutate(drugDeaths, substance_count=rowSums(drugDeaths[14:30])) 
+
+drugDeaths$substance_count[drugDeaths$substance_count == 0] <- 1
+
+
+```
+
+Based on data from the state's Office of the Chief Medical Examiner, there was a 319% increase in opioid-related drug overdoses from 2012 to 2018.
+
+  
+```{r,echo=FALSE, include=TRUE}
+#opioid related drug overdoses
+
+
+
+
+opioidRelatedDeaths<-longertest%>%filter(., grepl('U-47700|Carfentanil|Tapentadol|OPIOID|Opioid|Opiates|Morphine|Morphine RX|Hydromorph|Codiene|Heroin|Fentanyl|FentanylAnalogue|Oxycodone|Oxymorphone|Hydrocodone|Methadone|Tramad|Morphine_NotHeroin|Hydromorphone|OpiateNOS|Bupren', Substance))%>% group_by(ID)%>%select(ID, year)%>% unique()
+  
+  
+IDandSubstanceCount<-merge(opioidRelatedDeaths, drugDeaths, by = "ID")
+
+together<-full_join(opioidRelatedDeaths,IDandSubstanceCount, by= "ID")
+
+
+
+
+ggplot(opioidRelatedDeaths, aes(x=year))+geom_bar(stat="count")+labs(title = "Opioid Related Deaths", subtitle = "Connecticut: 2012-2018")+geom_text(stat='count',aes(label=..count..),vjust=-1)+ylim(0,1100)
+
+
+```
+
+
+The dramatic increase in overdoses correlates to an increase in the number of substances associated with each overdose. See below. 
+
+  
+```{r,echo=FALSE, include=TRUE}
+
+drugDeaths$substance_count<-as.factor(drugDeaths$substance_count)
+drugDeaths%>%na.omit(year)%>%ggplot()+geom_bar(aes(x=substance_count,fill=substance_count))+ylab(label ="number of deaths")+xlab(label="number of substances")+facet_wrap(~year)+labs(title = "Number of overdose deaths by the number of substances associated", subtitle = "Connecticut, 2012-2018")
+
+drugDeaths$substance_count<-as.numeric(drugDeaths$substance_count)
+
+drugDeaths%>%drop_na(year)%>%group_by(year)%>%summarise(mean(as.numeric(substance_count)))
+
+
+```
+
+
+
+Fentanyl was involved in 74% of all overdose deaths in 2018 in Connecticut and a super-majority of fentanyl-related deaths involved at least one other drug.
+
+  
+```{r, echo=FALSE, include=TRUE}
+
+FentRelatedDeaths<-longertest%>%filter(., grepl('Fentanyl|FentanylAnalogue|Carfentanyl|Carfentinil', Substance))
+                                       
+                                       
+FentandOpiateOverall<-full_join(opioidRelatedDeaths, FentRelatedDeaths, by = "ID")
+
+FentandOpiateOverall<-full_join(FentandOpiateOverall, IDandSubstanceCount, by = "ID")
+
+
+FentandOpiateOverall$Substance[!is.na(FentandOpiateOverall$Substance)] <- "Fentinyl"
+FentandOpiateOverall$Substance[is.na(FentandOpiateOverall$Substance)] <- "Other Opiate"
+
+FentandOpiateOverall$Substance<-as.factor(FentandOpiateOverall$Substance)
+
+ggplot(FentandOpiateOverall,aes(x=substance_count,fill=Substance))+geom_bar()+ylab(label ="Overdoses")+xlab(label="Number of Substances")+labs(title = "Occurance of Fentinyl in drug related deaths ")+facet_wrap(~year.x.x)+theme_minimal()
+
+
+
+countFentTotal<-FentandOpiateOverall%>%group_by(year.x.x)%>%select(ID,Substance,year.x.x)%>%filter(Substance=="Fentinyl")%>%unique()%>%count()
+countTotalOpiate<-FentandOpiateOverall%>%group_by(year.x.x)%>%select(ID,Substance,year.x.x)%>%unique()%>%count()
+countTotal<-drugDeaths%>%group_by(year)%>%drop_na()%>%count()
+
+countFentMultiple<-FentandOpiateOverall%>%group_by(year.x.x)%>%select(ID,Substance,year.x.x,substance_count)%>%filter(Substance=="Fentinyl")%>%filter(substance_count>1)%>%unique()%>%count()
+
+
+fentRatio=countFentTotal/countTotalOpiate
+
+names(fentRatio)<-c("Year","Fentinyl/Other Opiate Deaths")
+fentRatio[1]<-c("2012","2013","2014","2015","2016","2017","2018")
+fentRatio
+
+
+overallRatio=countFentTotal/countTotal
+names(overallRatio)<-c("Year","Fentinyl/Total Overdose Deaths")
+overallRatio[1]<-c("2012","2013","2014","2015","2016","2017","2018")
+overallRatio
+
+
+multipleFentRatio=countFentMultiple/countFentTotal
+names(multipleFentRatio)<-c("Year","Fentinyl+/Total Overdose Deaths")
+multipleFentRatio[1]<-c("2012","2013","2014","2015","2016","2017","2018")
+multipleFentRatio
+
+```
+
+
+
+
+  
+
