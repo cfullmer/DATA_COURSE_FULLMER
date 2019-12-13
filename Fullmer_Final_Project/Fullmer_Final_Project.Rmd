@@ -208,7 +208,7 @@ FentandOpiateOverall$Substance[is.na(FentandOpiateOverall$Substance)] <- "Other 
 
 FentandOpiateOverall$Substance<-as.factor(FentandOpiateOverall$Substance)
 
-ggplot(FentandOpiateOverall,aes(x=substance_count,fill=Substance))+geom_bar()+ylab(label ="Overdoses")+xlab(label="Number of Substances")+labs(title = "Occurance of Fentinyl in drug related deaths ")+facet_wrap(~year.x.x)+theme_minimal()
+ggplot(FentandOpiateOverall,aes(x=substance_count,fill=Substance))+geom_bar()+ylab(label ="Overdoses")+xlab(label="Number of Substances")+labs(title = "Occurance of fentinyl in opiate-related deaths ")+facet_wrap(~year.x.x)+theme_minimal()
 
 
 
